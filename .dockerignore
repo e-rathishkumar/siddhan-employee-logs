@@ -1,0 +1,42 @@
+# Flutter apps (not needed in Docker)
+employee_app/
+kiosk_app/
+
+# Git
+.git/
+.gitignore
+
+# Node modules (will be installed in container)
+**/node_modules/
+
+# Python cache
+**/__pycache__/
+**/*.pyc
+.venv/
+venv/
+
+# Flutter build artifacts
+**/.dart_tool/
+**/build/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+
+# iOS/Android
+**/ios/Pods/
+**/android/.gradle/
+
+# Database files
+*.db
+*.db-journal
+
+# IDE
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docs
+*.md
+!db-admin/templates/*.html
