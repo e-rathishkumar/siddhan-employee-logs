@@ -1,6 +1,155 @@
 # Siddhan Employee Logs - Demo Instructions
 
-> **Live URL:** https://insertion-miami-participation-enhancements.trycloudflare.com
+> **Live URL:** https://siddhan-logs.onrender.com  
+> ⚠️ Free tier sleeps after 15 min inactivity — first request takes ~30s to wake up.
+
+---
+
+## Credentials
+
+| Role | Email | Password | Used In |
+|------|-------|----------|---------|
+| **Admin** | `admin@siddhan.com` | `Siddhan@123` | Admin Web, Kiosk Login |
+| **Employee** | (created by admin) | (set by admin) | Employee App |
+
+---
+
+## Quick Access
+
+| Service | URL |
+|---|---|
+| Admin Dashboard | https://siddhan-logs.onrender.com |
+| API Docs (Swagger) | https://siddhan-logs.onrender.com/api/docs |
+| DB Admin | https://siddhan-logs.onrender.com/db/ |
+| Health Check | https://siddhan-logs.onrender.com/health |
+
+---
+
+## Demo Flow: Add Employee → 360° Face Scan → Mark Attendance
+
+### Step 1: Login to Admin Dashboard
+
+1. Open https://siddhan-logs.onrender.com
+2. Login: `admin@siddhan.com` / `Siddhan@123`
+3. You'll land on the Dashboard page
+
+### Step 2: Add a New Employee
+
+1. Click **"Employees"** in the left sidebar
+2. Click **"Add Employee"** button
+3. Fill the 2-column form:
+
+   | Field | Example |
+   |---|---|
+   | Employee ID | `EMP100` |
+   | Full Name | `Your Name` |
+   | Email | `yourname@example.com` |
+   | Phone | `919876543210` |
+   | Gender | Male / Female / Other |
+   | Designation | `Developer` |
+
+4. Click **"Create"**
+
+### Step 3: Start the Kiosk App
+
+```bash
+cd kiosk_app
+flutter pub get
+flutter run
+```
+
+1. **Login Screen** appears — login with `admin@siddhan.com` / `Siddhan@123`
+2. Kiosk enters scanning mode with live camera
+
+### Step 4: Face Detection → Auto Attendance
+
+1. Position the registered employee's face in front of the camera
+2. Within ~2.5 seconds, the system will:
+   - Capture a frame and send to backend (`POST /api/v1/face/detect-and-mark`)
+   - Match against stored face encodings (≥80% confidence)
+   - Draw **head-focused rectangles**: Green = recognized, Red = unknown
+3. If matched:
+   - **Welcome overlay** with employee name + gender-based avatar
+   - **Text-to-Speech** speaks: *"Hey [Name], Good Morning! Your check-in is completed. Wishing you a wonderful and productive day ahead!"*
+   - Male employees → male voice (Aaron on iOS)
+   - Female employees → female voice (Samantha on iOS)
+   - Attendance auto-marked as check-in
+
+### Step 5: Check-Out and Re-Check-In
+
+1. Same employee faces the camera again → **"Already In"** screen appears
+   - TTS: *"Welcome back [Name]! It looks like you are already checked in..."*
+   - Options: **Continue Working** or **Check Out**
+2. After check-out, if they face camera again → **"Already Out"** screen
+   - TTS: *"Hey [Name]! You have already checked out today..."*
+   - Option to **Check In Again** or **No Thanks**
+
+### Step 6: 360° Face Registration (Employee App)
+
+```bash
+cd employee_app
+flutter pub get
+flutter run
+```
+
+1. Login as the employee created in Step 2
+2. On first login, **360° Face Registration** opens automatically
+3. Capture 7 angles: Front → Left 45° → Left 90° → Right 45° → Right 90° → Up → Down
+4. Each angle validated server-side
+5. Progress: 0% → 100%
+
+### Step 7: Profile Edit (Employee App)
+
+1. Go to **Profile** tab
+2. See gender, designation, and other details
+3. Tap the **pencil icon** on the profile photo to re-register face
+
+### Step 8: Admin Logout (Kiosk)
+
+1. When the admin's face is detected on the kiosk, a **logout button** appears
+2. Tap it → confirmation dialog → clears session → returns to login screen
+
+### Step 9: Verify in Admin Dashboard
+
+1. Go to the Admin Dashboard
+2. Click **"Attendance Logs"** → see the employee's records
+3. Click **"Dashboard"** → see real-time activity
+
+### Step 10: DB Admin
+
+1. Open https://siddhan-logs.onrender.com/db/
+2. Browse tables: `employees`, `check_logs`, `face_photos`, `kiosk_logs`
+3. Edit/delete rows directly, or run raw SQL in the SQL Console
+
+---
+
+## Kiosk Screen States & TTS Messages
+
+| State | Trigger | TTS Message |
+|---|---|---|
+| **Welcome** | First check-in of the day | *"Hey [Name], [Greeting]! Your check-in is completed. Wishing you a wonderful and productive day ahead!"* |
+| **Already In** | Scanned when already checked in | *"Welcome back [Name]! It looks like you are already checked in. Would you like to continue working or check out?"* |
+| **Already Out** | Scanned after checking out | *"Hey [Name]! You have already checked out today. Would you like to check in again?"* |
+
+---
+
+## API Testing (via curl)
+
+```bash
+BASE=https://siddhan-logs.onrender.com
+
+# Health
+curl $BASE/health
+
+# Login
+curl -X POST $BASE/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@siddhan.com","password":"Siddhan@123"}'
+
+# Detect and mark (with photo)
+curl -X POST $BASE/api/v1/face/detect-and-mark \
+  -F "file=@/path/to/photo.jpg"
+```
 
 ---
 
