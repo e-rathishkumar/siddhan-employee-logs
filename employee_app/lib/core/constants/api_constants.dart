@@ -4,7 +4,7 @@ class ApiConstants {
   // Base URL - configured via --dart-define=API_BASE_URL=https://your-host/api/v1
   static const String baseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'https://insertion-miami-participation-enhancements.trycloudflare.com/api/v1',
+    defaultValue: 'https://siddhan-logs.onrender.com/api/v1',
   );
 
   // WebSocket URL - derived from base URL

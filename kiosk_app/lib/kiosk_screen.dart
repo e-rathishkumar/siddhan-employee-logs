@@ -7,6 +7,7 @@ import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,7 +16,7 @@ import 'login_screen.dart';
 import 'main.dart';
 
 /// API base URL - set via --dart-define=API_BASE_URL=https://your-host
-const String kApiBaseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'https://insertion-miami-participation-enhancements.trycloudflare.com');
+const String kApiBaseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'https://siddhan-logs.onrender.com');
 
 /// Possible kiosk states
 enum KioskState {
@@ -60,6 +61,7 @@ class _KioskScreenState extends State<KioskScreen> with WidgetsBindingObserver {
   bool _isDisposed = false;
   Timer? _detectionTimer;
   Timer? _returnToScanTimer;
+  FlutterTts? _tts;
 
   KioskState _kioskState = KioskState.scanning;
   String _currentUserName = '';
@@ -100,7 +102,84 @@ class _KioskScreenState extends State<KioskScreen> with WidgetsBindingObserver {
     _detectionTimer?.cancel();
     _returnToScanTimer?.cancel();
     _cameraController?.dispose();
+    _tts?.stop();
     super.dispose();
+  }
+
+  Future<FlutterTts> _getTts() async {
+    if (_tts != null) return _tts!;
+    _tts = FlutterTts();
+    if (Platform.isIOS) {
+      await _tts!.setSharedInstance(true);
+      await _tts!.setIosAudioCategory(
+        IosTextToSpeechAudioCategory.playback,
+        [
+          IosTextToSpeechAudioCategoryOptions.allowBluetooth,
+          IosTextToSpeechAudioCategoryOptions.allowBluetoothA2DP,
+          IosTextToSpeechAudioCategoryOptions.mixWithOthers,
+        ],
+        IosTextToSpeechAudioMode.defaultMode,
+      );
+    }
+    await _tts!.setSpeechRate(0.45);
+    await _tts!.setVolume(1.0);
+    await _tts!.setPitch(1.0);
+    return _tts!;
+  }
+
+  Future<void> _speakMessage(String message, {bool isMale = true}) async {
+    final tts = await _getTts();
+    if (Platform.isIOS) {
+      if (isMale) {
+        await tts.setVoice({'name': 'Aaron', 'locale': 'en-US'});
+      } else {
+        await tts.setVoice({'name': 'Samantha', 'locale': 'en-US'});
+      }
+    } else {
+      await tts.setLanguage('en-US');
+      await _setAndroidVoice(tts, isMale);
+    }
+    await Future.delayed(const Duration(milliseconds: 100));
+    if (_isDisposed) return;
+    await tts.speak(message);
+  }
+
+  Future<void> _setAndroidVoice(FlutterTts tts, bool isMale) async {
+    try {
+      final dynamic rawVoices = await tts.getVoices;
+      if (rawVoices is! List) {
+        await tts.setPitch(isMale ? 0.82 : 1.3);
+        return;
+      }
+      Map<String, String>? best;
+      for (final dynamic v in rawVoices) {
+        if (v is! Map) continue;
+        final String name = v['name']?.toString() ?? '';
+        final String locale = v['locale']?.toString() ?? '';
+        final String gender = v['gender']?.toString().toLowerCase() ?? '';
+        if (!locale.toLowerCase().startsWith('en')) continue;
+        final bool genderKnown = gender == 'male' || gender == 'female';
+        final bool isVoiceFemale = genderKnown
+            ? gender == 'female'
+            : name.contains('iof') || name.contains('gba') || name.contains('tpf') || name.contains('-f-') || name.contains('sff') || name.toLowerCase().contains('female');
+        final bool isVoiceMale = genderKnown
+            ? gender == 'male'
+            : name.contains('iom') || name.contains('sfm') || name.contains('tpm') || name.contains('-m-') || name.toLowerCase().contains('male');
+        final bool matches = isMale ? isVoiceMale : isVoiceFemale;
+        if (matches) {
+          best = {'name': name, 'locale': locale};
+          if (name.contains('network')) break;
+        }
+      }
+      if (best != null) {
+        await tts.setVoice(best);
+        await tts.setPitch(1.0);
+      } else {
+        await tts.setPitch(isMale ? 0.82 : 1.3);
+      }
+    } catch (_) {
+      await tts.setPitch(isMale ? 0.82 : 1.3);
+    }
   }
 
   @override
@@ -339,6 +418,27 @@ class _KioskScreenState extends State<KioskScreen> with WidgetsBindingObserver {
                   }
                 }
                 Future.microtask(() => _checkIfAdmin(empId));
+
+                // TTS: speak the screen message
+                final isMale = (gender ?? _genderCache[empId])?.toLowerCase() != 'female';
+                final greeting = _getGreeting();
+                String ttsMessage;
+                switch (state) {
+                  case KioskState.welcome:
+                    ttsMessage = 'Hey $name, $greeting! Your check-in is completed. Wishing you a wonderful and productive day ahead!';
+                    break;
+                  case KioskState.alreadyIn:
+                    ttsMessage = 'Welcome back $name! It looks like you are already checked in. Would you like to continue working or check out?';
+                    break;
+                  case KioskState.alreadyOut:
+                    ttsMessage = 'Hey $name! You have already checked out today. Would you like to check in again?';
+                    break;
+                  default:
+                    ttsMessage = '';
+                }
+                if (ttsMessage.isNotEmpty) {
+                  Future.microtask(() => _speakMessage(ttsMessage, isMale: isMale));
+                }
               }
 
               if (logAction == 'check_in') {
@@ -420,6 +520,7 @@ class _KioskScreenState extends State<KioskScreen> with WidgetsBindingObserver {
 
   void _returnToScanning() {
     _returnToScanTimer?.cancel();
+    _tts?.stop();
     setState(() {
       _kioskState = KioskState.scanning;
       _currentUserName = '';
@@ -478,6 +579,7 @@ class _KioskScreenState extends State<KioskScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _handleContinue() async {
+    _tts?.stop();
     try {
       await _dio.post('/api/v1/face/kiosk-continue/$_currentEmployeeId');
     } catch (_) {}
@@ -485,6 +587,7 @@ class _KioskScreenState extends State<KioskScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _handleCheckout() async {
+    _tts?.stop();
     try {
       await _dio.post('/api/v1/face/kiosk-checkout/$_currentEmployeeId');
     } catch (_) {}
@@ -507,6 +610,7 @@ class _KioskScreenState extends State<KioskScreen> with WidgetsBindingObserver {
   }
 
   Future<void> _handleReCheckin() async {
+    _tts?.stop();
     try {
       await _dio.post('/api/v1/face/kiosk-recheckin/$_currentEmployeeId');
     } catch (_) {}
