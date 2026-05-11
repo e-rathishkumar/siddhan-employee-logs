@@ -1,0 +1,163 @@
+{
+  "app_name": "AttendAI",
+  "login": {
+    "title": "साइन इन करें",
+    "email": "ईमेल पता",
+    "password": "पासवर्ड",
+    "submit": "साइन इन करें",
+    "invalid_credentials": "अमान्य ईमेल या पासवर्ड",
+    "welcome_back": "वापसी पर स्वागत है!"
+  },
+  "dashboard": {
+    "title": "डैशबोर्ड",
+    "total_employees": "कुल कर्मचारी",
+    "present_today": "आज उपस्थित",
+    "absent_today": "आज अनुपस्थित",
+    "late_today": "आज देरी से",
+    "on_leave": "छुट्टी पर",
+    "attendance_rate": "उपस्थिति दर",
+    "pending_leaves": "लंबित छुट्टी अनुरोध",
+    "recent_activity": "हालिया गतिविधि"
+  },
+  "employees": {
+    "title": "कर्मचारी",
+    "add": "कर्मचारी जोड़ें",
+    "edit": "कर्मचारी संपादित करें",
+    "delete": "कर्मचारी हटाएं",
+    "name": "नाम",
+    "email": "ईमेल",
+    "phone": "फोन",
+    "department": "विभाग",
+    "designation": "पदनाम",
+    "joined": "शामिल होने की तिथि",
+    "status": "स्थिति",
+    "face_registered": "चेहरा पंजीकृत",
+    "search_placeholder": "कर्मचारी खोजें..."
+  },
+  "departments": {
+    "title": "विभाग",
+    "add": "विभाग जोड़ें",
+    "edit": "विभाग संपादित करें",
+    "name": "विभाग का नाम",
+    "code": "कोड",
+    "description": "विवरण",
+    "head": "विभाग प्रमुख",
+    "employee_count": "कर्मचारी"
+  },
+  "shifts": {
+    "title": "शिफ्ट",
+    "add": "शिफ्ट जोड़ें",
+    "edit": "शिफ्ट संपादित करें",
+    "name": "शिफ्ट का नाम",
+    "code": "कोड",
+    "start_time": "प्रारंभ समय",
+    "end_time": "समाप्ति समय",
+    "grace_minutes": "अनुग्रह अवधि (मिनट)",
+    "assignments": "शिफ्ट असाइनमेंट"
+  },
+  "holidays": {
+    "title": "छुट्टियाँ",
+    "add": "छुट्टी जोड़ें",
+    "edit": "छुट्टी संपादित करें",
+    "name": "छुट्टी का नाम",
+    "date": "तिथि",
+    "type": "प्रकार",
+    "public": "सार्वजनिक छुट्टी",
+    "optional": "वैकल्पिक छुट्टी",
+    "restricted": "प्रतिबंधित छुट्टी"
+  },
+  "leaves": {
+    "title": "छुट्टी प्रबंधन",
+    "types": "छुट्टी प्रकार",
+    "requests": "छुट्टी अनुरोध",
+    "balances": "छुट्टी शेष",
+    "approve": "स्वीकृत करें",
+    "reject": "अस्वीकार करें",
+    "pending": "लंबित",
+    "approved": "स्वीकृत",
+    "rejected": "अस्वीकृत"
+  },
+  "attendance": {
+    "title": "उपस्थिति",
+    "date": "तिथि",
+    "check_in": "चेक इन",
+    "check_out": "चेक आउट",
+    "status": "स्थिति",
+    "method": "सत्यापन विधि",
+    "present": "उपस्थित",
+    "absent": "अनुपस्थित",
+    "late": "देरी से",
+    "half_day": "आधा दिन",
+    "export": "निर्यात"
+  },
+  "analytics": {
+    "title": "विश्लेषण",
+    "trends": "उपस्थिति रुझान",
+    "by_department": "विभाग के अनुसार",
+    "summary": "सारांश"
+  },
+  "geofence": {
+    "title": "जियोफेंस क्षेत्र",
+    "add": "क्षेत्र जोड़ें",
+    "edit": "क्षेत्र संपादित करें",
+    "name": "क्षेत्र का नाम",
+    "address": "पता",
+    "radius": "त्रिज्या (मीटर)"
+  },
+  "users": {
+    "title": "उपयोगकर्ता प्रबंधन",
+    "add": "उपयोगकर्ता जोड़ें",
+    "edit": "उपयोगकर्ता संपादित करें",
+    "activate": "सक्रिय करें",
+    "deactivate": "निष्क्रिय करें",
+    "reset_password": "पासवर्ड रीसेट करें"
+  },
+  "roles": {
+    "title": "भूमिकाएँ और अनुमतियाँ",
+    "add": "भूमिका जोड़ें",
+    "edit": "भूमिका संपादित करें",
+    "permissions": "अनुमतियाँ"
+  },
+  "audit": {
+    "title": "ऑडिट लॉग",
+    "action": "कार्रवाई",
+    "entity": "इकाई",
+    "user": "उपयोगकर्ता",
+    "timestamp": "समय",
+    "details": "विवरण"
+  },
+  "settings": {
+    "title": "सेटिंग्स",
+    "general": "सामान्य",
+    "attendance_rules": "उपस्थिति नियम",
+    "notifications": "सूचनाएं",
+    "save": "परिवर्तन सहेजें"
+  },
+  "reports": {
+    "title": "रिपोर्ट",
+    "generate": "रिपोर्ट बनाएं",
+    "type": "रिपोर्ट प्रकार",
+    "format": "प्रारूप",
+    "date_range": "तिथि सीमा"
+  },
+  "common": {
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "delete": "हटाएं",
+    "edit": "संपादित करें",
+    "create": "बनाएं",
+    "search": "खोजें",
+    "filter": "फ़िल्टर",
+    "export": "निर्यात",
+    "back": "पीछे",
+    "next": "अगला",
+    "previous": "पिछला",
+    "loading": "लोड हो रहा है...",
+    "no_data": "कोई डेटा उपलब्ध नहीं",
+    "confirm_delete": "क्या आप वाकई इसे हटाना चाहते हैं?",
+    "success": "कार्य सफलतापूर्वक पूरा हुआ",
+    "error": "एक त्रुटि हुई",
+    "active": "सक्रिय",
+    "inactive": "निष्क्रिय"
+  }
+}

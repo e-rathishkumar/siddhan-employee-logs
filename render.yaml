@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: siddhan-logs
+    runtime: docker
+    dockerfilePath: ./Dockerfile.prod
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite:////app/data/siddhan_logs.db
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: FACE_MATCH_THRESHOLD
+        value: "0.80"
+      - key: ALLOWED_ORIGINS
+        value: "*"
+      - key: DEFAULT_ADMIN_EMAIL
+        value: admin@siddhan.com
+      - key: DEFAULT_ADMIN_PASSWORD
+        value: Siddhan@123
+      - key: DATABASE_PATH
+        value: /app/data/siddhan_logs.db

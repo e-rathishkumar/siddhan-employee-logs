@@ -1,0 +1,110 @@
+const Map<String, String> tamilTranslations = {
+  // Common
+  'app_name': 'AttendAI',
+  'ok': 'சரி',
+  'cancel': 'ரத்து',
+  'save': 'சேமி',
+  'delete': 'நீக்கு',
+  'edit': 'திருத்து',
+  'loading': 'ஏற்றுகிறது...',
+  'retry': 'மீண்டும் முயற்சி',
+  'error': 'பிழை',
+  'success': 'வெற்றி',
+  'no_data': 'தரவு இல்லை',
+  'something_went_wrong': 'ஏதோ தவறு நடந்தது. மீண்டும் முயற்சிக்கவும்.',
+
+  // Auth
+  'login': 'உள்நுழைவு',
+  'logout': 'வெளியேறு',
+  'email': 'மின்னஞ்சல்',
+  'password': 'கடவுச்சொல்',
+  'sign_in': 'உள்நுழைக',
+  'sign_in_subtitle': 'உங்கள் வருகைப்பதிவை பதிவு செய்ய உள்நுழையவும்',
+  'email_required': 'மின்னஞ்சல் தேவை',
+  'email_invalid': 'சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்',
+  'password_required': 'கடவுச்சொல் தேவை',
+  'password_min_length': 'கடவுச்சொல் குறைந்தது 6 எழுத்துகள் இருக்க வேண்டும்',
+  'invalid_credentials': 'தவறான மின்னஞ்சல் அல்லது கடவுச்சொல்',
+  'session_expired': 'அமர்வு காலாவதியானது. மீண்டும் உள்நுழையவும்.',
+
+  // Navigation
+  'dashboard': 'டாஷ்போர்டு',
+  'attendance': 'வருகைப்பதிவு',
+  'leaves': 'விடுப்பு',
+  'profile': 'சுயவிவரம்',
+
+  // Dashboard
+  'welcome_back': 'மீண்டும் வருக',
+  'today_status': 'இன்றைய நிலை',
+  'check_in': 'உள்நுழை',
+  'check_out': 'வெளியேறு',
+  'checked_in': 'உள்நுழைந்தது',
+  'checked_out': 'வெளியேறியது',
+  'not_checked_in': 'இன்னும் உள்நுழையவில்லை',
+  'working_hours': 'பணி நேரம்',
+  'this_month': 'இந்த மாதம்',
+  'present': 'வந்துள்ளார்',
+  'absent': 'வரவில்லை',
+  'late': 'தாமதம்',
+  'half_day': 'அரை நாள்',
+  'on_leave': 'விடுப்பில்',
+  'recent_activity': 'சமீபத்திய செயல்பாடு',
+  'view_all': 'அனைத்தையும் காண',
+
+  // Attendance
+  'attendance_history': 'வருகைப்பதிவு வரலாறு',
+  'date': 'தேதி',
+  'status': 'நிலை',
+  'check_in_time': 'உள்நுழைவு நேரம்',
+  'check_out_time': 'வெளியேற்ற நேரம்',
+  'duration': 'கால அளவு',
+  'verification_method': 'சரிபார்ப்பு',
+  'no_attendance_records': 'வருகைப்பதிவு இல்லை',
+
+  // Leaves
+  'leave_requests': 'விடுப்பு கோரிக்கைகள்',
+  'apply_leave': 'விடுப்பு விண்ணப்பம்',
+  'leave_type': 'விடுப்பு வகை',
+  'start_date': 'தொடக்க தேதி',
+  'end_date': 'முடிவு தேதி',
+  'reason': 'காரணம்',
+  'pending': 'நிலுவையில்',
+  'approved': 'அங்கீகரிக்கப்பட்டது',
+  'rejected': 'நிராகரிக்கப்பட்டது',
+  'leave_balance': 'விடுப்பு இருப்பு',
+  'days_remaining': 'நாட்கள் மீதம்',
+  'no_leave_requests': 'விடுப்பு கோரிக்கைகள் இல்லை',
+  'leave_applied': 'விடுப்பு கோரிக்கை வெற்றிகரமாக சமர்ப்பிக்கப்பட்டது',
+  'select_leave_type': 'விடுப்பு வகையை தேர்ந்தெடுக்கவும்',
+  'reason_required': 'காரணம் தேவை',
+
+  // Profile
+  'my_profile': 'என் சுயவிவரம்',
+  'employee_id': 'பணியாளர் எண்',
+  'department': 'துறை',
+  'designation': 'பதவி',
+  'phone': 'தொலைபேசி',
+  'shift': 'பணிநேரம்',
+  'joining_date': 'சேர்ந்த தேதி',
+  'language': 'மொழி',
+  'change_language': 'மொழியை மாற்று',
+  'english': 'ஆங்கிலம்',
+  'tamil': 'தமிழ்',
+  'hindi': 'இந்தி',
+  'about_app': 'செயலி பற்றி',
+  'version': 'பதிப்பு',
+
+  // Geofence
+  'access_denied': 'அணுகல் மறுக்கப்பட்டது',
+  'outside_geofence': 'அலுவலக பகுதிக்கு வெளியே',
+  'outside_geofence_message':
+      'நீங்கள் தற்போது அலுவலக பகுதிக்கு வெளியே உள்ளீர்கள். செயலியை அணுக அலுவலக வளாகத்திற்குள் செல்லவும்.',
+  'location_permission_required': 'இருப்பிட அனுமதி தேவை',
+  'location_permission_message':
+      'உங்கள் அலுவலக இருப்பை சரிபார்க்க இந்த செயலிக்கு இருப்பிட அணுகல் தேவை. இருப்பிட சேவைகளை இயக்கவும்.',
+  'enable_location': 'இருப்பிடத்தை இயக்கு',
+  'checking_location': 'உங்கள் இருப்பிடத்தை சரிபார்க்கிறது...',
+
+  // Splash
+  'initializing_app': 'துவக்குகிறது...',
+};

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Edit Row - {{ table_name }}{% endblock %}
+{% block content %}
+<h2 style="margin-bottom: 1.5rem;">Edit {{ table_name }} — Row #{{ row['id'] }}</h2>
+<div class="card">
+  <div class="card-body">
+    <form method="POST">
+      {% for col in columns %}
+      <div class="form-group">
+        <label>{{ col }}</label>
+        {% if col == 'id' %}
+        <input type="text" value="{{ row[col] }}" disabled>
+        {% else %}
+        <input type="text" name="{{ col }}" value="{{ row[col] if row[col] is not none else '' }}">
+        {% endif %}
+      </div>
+      {% endfor %}
+      <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="/table/{{ table_name }}" class="btn btn-ghost">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

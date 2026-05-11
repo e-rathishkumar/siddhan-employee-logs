@@ -1,0 +1,49 @@
+services:
+  frontend:
+    build:
+      context: .
+      args:
+        VITE_API_BASE_URL: http://localhost:8000/api/v1
+        VITE_WS_URL: ws://localhost:8000/ws
+        VITE_MAP_TILE_URL: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
+    container_name: siddhan-logs-admin
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    image: siddhan-logs-backend:latest
+    container_name: siddhan-logs-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:////app/data/siddhan_logs.db
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-changeme-generate-a-secure-random-string}
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: postgres:16-alpine
+    container_name: siddhan-logs-db
+    environment:
+      POSTGRES_DB: siddhan_logs
+      POSTGRES_USER: siddhan
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

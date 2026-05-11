@@ -1,0 +1,110 @@
+const Map<String, String> hindiTranslations = {
+  // Common
+  'app_name': 'AttendAI',
+  'ok': 'ठीक है',
+  'cancel': 'रद्द करें',
+  'save': 'सेव करें',
+  'delete': 'हटाएं',
+  'edit': 'संपादित करें',
+  'loading': 'लोड हो रहा है...',
+  'retry': 'पुन: प्रयास',
+  'error': 'त्रुटि',
+  'success': 'सफल',
+  'no_data': 'कोई डेटा उपलब्ध नहीं',
+  'something_went_wrong': 'कुछ गलत हो गया। कृपया पुन: प्रयास करें।',
+
+  // Auth
+  'login': 'लॉगिन',
+  'logout': 'लॉगआउट',
+  'email': 'ईमेल',
+  'password': 'पासवर्ड',
+  'sign_in': 'साइन इन',
+  'sign_in_subtitle': 'अपनी उपस्थिति दर्ज करने के लिए साइन इन करें',
+  'email_required': 'ईमेल आवश्यक है',
+  'email_invalid': 'कृपया एक वैध ईमेल दर्ज करें',
+  'password_required': 'पासवर्ड आवश्यक है',
+  'password_min_length': 'पासवर्ड कम से कम 6 अक्षर का होना चाहिए',
+  'invalid_credentials': 'अमान्य ईमेल या पासवर्ड',
+  'session_expired': 'सत्र समाप्त हो गया। कृपया पुन: लॉगिन करें।',
+
+  // Navigation
+  'dashboard': 'डैशबोर्ड',
+  'attendance': 'उपस्थिति',
+  'leaves': 'अवकाश',
+  'profile': 'प्रोफ़ाइल',
+
+  // Dashboard
+  'welcome_back': 'वापस स्वागत है',
+  'today_status': 'आज की स्थिति',
+  'check_in': 'चेक इन',
+  'check_out': 'चेक आउट',
+  'checked_in': 'चेक इन किया',
+  'checked_out': 'चेक आउट किया',
+  'not_checked_in': 'अभी तक चेक इन नहीं किया',
+  'working_hours': 'कार्य घंटे',
+  'this_month': 'इस महीने',
+  'present': 'उपस्थित',
+  'absent': 'अनुपस्थित',
+  'late': 'देरी',
+  'half_day': 'आधा दिन',
+  'on_leave': 'छुट्टी पर',
+  'recent_activity': 'हालिया गतिविधि',
+  'view_all': 'सभी देखें',
+
+  // Attendance
+  'attendance_history': 'उपस्थिति इतिहास',
+  'date': 'तारीख',
+  'status': 'स्थिति',
+  'check_in_time': 'चेक इन समय',
+  'check_out_time': 'चेक आउट समय',
+  'duration': 'अवधि',
+  'verification_method': 'सत्यापन',
+  'no_attendance_records': 'कोई उपस्थिति रिकॉर्ड नहीं मिला',
+
+  // Leaves
+  'leave_requests': 'अवकाश अनुरोध',
+  'apply_leave': 'अवकाश के लिए आवेदन',
+  'leave_type': 'अवकाश प्रकार',
+  'start_date': 'प्रारंभ तिथि',
+  'end_date': 'समाप्ति तिथि',
+  'reason': 'कारण',
+  'pending': 'लंबित',
+  'approved': 'स्वीकृत',
+  'rejected': 'अस्वीकृत',
+  'leave_balance': 'अवकाश शेष',
+  'days_remaining': 'दिन शेष',
+  'no_leave_requests': 'कोई अवकाश अनुरोध नहीं',
+  'leave_applied': 'अवकाश अनुरोध सफलतापूर्वक सबमिट किया गया',
+  'select_leave_type': 'अवकाश प्रकार चुनें',
+  'reason_required': 'कारण आवश्यक है',
+
+  // Profile
+  'my_profile': 'मेरी प्रोफ़ाइल',
+  'employee_id': 'कर्मचारी आईडी',
+  'department': 'विभाग',
+  'designation': 'पदनाम',
+  'phone': 'फ़ोन',
+  'shift': 'शिफ्ट',
+  'joining_date': 'शामिल होने की तारीख',
+  'language': 'भाषा',
+  'change_language': 'भाषा बदलें',
+  'english': 'अंग्रेज़ी',
+  'tamil': 'तमिल',
+  'hindi': 'हिंदी',
+  'about_app': 'ऐप के बारे में',
+  'version': 'संस्करण',
+
+  // Geofence
+  'access_denied': 'पहुंच अस्वीकृत',
+  'outside_geofence': 'कार्यालय क्षेत्र के बाहर',
+  'outside_geofence_message':
+      'आप वर्तमान में निर्धारित कार्यालय क्षेत्र के बाहर हैं। एप्लिकेशन का उपयोग करने के लिए कृपया कार्यालय परिसर में आएं।',
+  'location_permission_required': 'स्थान अनुमति आवश्यक',
+  'location_permission_message':
+      'आपकी कार्यालय उपस्थिति सत्यापित करने के लिए इस ऐप को स्थान एक्सेस की आवश्यकता है। कृपया स्थान सेवाएं सक्षम करें।',
+  'enable_location': 'स्थान सक्षम करें',
+  'checking_location': 'आपका स्थान सत्यापित हो रहा है...',
+
+  // Splash
+  'initializing_app': 'प्रारंभ हो रहा है...',
+};

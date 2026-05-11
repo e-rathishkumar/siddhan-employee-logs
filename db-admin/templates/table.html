@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{ table_name }} - DB Admin{% endblock %}
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+  <div>
+    <h2>{{ table_name }}</h2>
+    <span style="color: #94a3b8; font-size: 0.875rem;">{{ total }} rows</span>
+  </div>
+</div>
+
+<div class="card" style="overflow-x: auto;">
+  <table>
+    <thead>
+      <tr>
+        {% for col in columns %}<th>{{ col }}</th>{% endfor %}
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        {% for col in columns %}<td title="{{ row[col] }}">{{ row[col] }}</td>{% endfor %}
+        <td style="white-space: nowrap;">
+          <a href="/table/{{ table_name }}/edit/{{ row['id'] }}" class="btn btn-ghost btn-sm">Edit</a>
+          <form method="POST" action="/table/{{ table_name }}/delete/{{ row['id'] }}" style="display:inline;" onsubmit="return confirm('Delete this row?')">
+            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if total_pages > 1 %}
+<div class="pagination">
+  {% if page > 1 %}<a href="?page={{ page - 1 }}" class="btn btn-ghost btn-sm">Prev</a>{% endif %}
+  <span class="badge">Page {{ page }} / {{ total_pages }}</span>
+  {% if page < total_pages %}<a href="?page={{ page + 1 }}" class="btn btn-ghost btn-sm">Next</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,48 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: siddhan-logs-db
+    environment:
+      POSTGRES_DB: siddhan_logs
+      POSTGRES_USER: siddhan
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U siddhan"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: .
+    container_name: siddhan-logs-backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://siddhan:${POSTGRES_PASSWORD:-changeme}@db:5432/siddhan_logs
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-changeme-generate-a-secure-random-string}
+      ALLOWED_ORIGINS: "http://localhost:5173,http://localhost:3000,http://localhost:8080"
+      DEFAULT_ADMIN_EMAIL: "${DEFAULT_ADMIN_EMAIL:-admin@siddhan.com}"
+      DEFAULT_ADMIN_PASSWORD: "${DEFAULT_ADMIN_PASSWORD:-Siddhan@123}"
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c "python scripts/seed.py && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+  admin:
+    build:
+      context: ../ai-attendance-admin
+      args:
+        VITE_API_BASE_URL: /api/v1
+    container_name: siddhan-logs-admin
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

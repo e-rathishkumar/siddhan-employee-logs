@@ -1,0 +1,55 @@
+# Node
+**/node_modules/
+**/dist/
+
+# Python
+**/__pycache__/
+**/*.pyc
+*.egg-info/
+.venv/
+venv/
+
+# Flutter
+**/.dart_tool/
+**/build/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/ios/Pods/
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Generated.xcconfig
+**/ios/.symlinks/
+**/android/.gradle/
+**/android/app/build/
+**/.packages
+
+# Database
+*.db
+*.db-journal
+
+# Uploads
+attendance-backend/uploads/faces/*
+attendance-backend/uploads/avatars/*
+!attendance-backend/uploads/faces/.gitkeep
+!attendance-backend/uploads/avatars/.gitkeep
+
+# Environment
+.env
+.env.local
+.env.production
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Logs
+*.log

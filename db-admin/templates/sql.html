@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}SQL Console - DB Admin{% endblock %}
+{% block content %}
+<h2 style="margin-bottom: 1.5rem;">SQL Console</h2>
+<div class="card">
+  <div class="card-body">
+    <form method="POST">
+      <div class="form-group">
+        <label>SQL Query</label>
+        <textarea name="query" rows="5" placeholder="SELECT * FROM employees LIMIT 10;">{{ query }}</textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Execute</button>
+    </form>
+  </div>
+</div>
+
+{% if error %}
+<div class="error" style="margin-top: 1rem;">{{ error }}</div>
+{% endif %}
+
+{% if result is not none %}
+  {% if result is string %}
+  <div class="success" style="margin-top: 1rem;">{{ result }}</div>
+  {% else %}
+  <div class="card" style="margin-top: 1rem; overflow-x: auto;">
+    <table>
+      <thead><tr>{% for col in columns %}<th>{{ col }}</th>{% endfor %}</tr></thead>
+      <tbody>
+        {% for row in result %}
+        <tr>{% for col in columns %}<td title="{{ row[col] }}">{{ row[col] }}</td>{% endfor %}</tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div style="padding: 0.75rem 1rem; color: #94a3b8; font-size: 0.875rem;">{{ result|length }} rows returned</div>
+  </div>
+  {% endif %}
+{% endif %}
+{% endblock %}

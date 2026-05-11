@@ -1,0 +1,25 @@
+name: siddhan_logs_kiosk
+description: Siddhan Employee Logs - Kiosk app with real-time face detection.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.4.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  camera: ^0.11.0+2
+  dio: ^5.7.0
+  flutter_screenutil: ^5.9.3
+  google_fonts: ^6.2.1
+  model_viewer_plus: ^1.8.1
+  shared_preferences: ^2.3.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true

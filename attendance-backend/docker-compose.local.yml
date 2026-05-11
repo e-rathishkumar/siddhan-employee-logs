@@ -1,0 +1,22 @@
+# Use this for local development - only starts PostgreSQL
+# Backend and admin run natively with `uvicorn` and `npm run dev`
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: siddhan-logs-db-local
+    environment:
+      POSTGRES_DB: siddhan_logs
+      POSTGRES_USER: siddhan
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata_local:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U siddhan"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata_local:

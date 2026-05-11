@@ -1,0 +1,110 @@
+const Map<String, String> englishTranslations = {
+  // Common
+  'app_name': 'AttendAI',
+  'ok': 'OK',
+  'cancel': 'Cancel',
+  'save': 'Save',
+  'delete': 'Delete',
+  'edit': 'Edit',
+  'loading': 'Loading...',
+  'retry': 'Retry',
+  'error': 'Error',
+  'success': 'Success',
+  'no_data': 'No data available',
+  'something_went_wrong': 'Something went wrong. Please try again.',
+
+  // Auth
+  'login': 'Login',
+  'logout': 'Logout',
+  'email': 'Email',
+  'password': 'Password',
+  'sign_in': 'Sign In',
+  'sign_in_subtitle': 'Sign in to mark your attendance',
+  'email_required': 'Email is required',
+  'email_invalid': 'Please enter a valid email',
+  'password_required': 'Password is required',
+  'password_min_length': 'Password must be at least 6 characters',
+  'invalid_credentials': 'Invalid email or password',
+  'session_expired': 'Session expired. Please login again.',
+
+  // Navigation
+  'dashboard': 'Dashboard',
+  'attendance': 'Attendance',
+  'leaves': 'Leaves',
+  'profile': 'Profile',
+
+  // Dashboard
+  'welcome_back': 'Welcome back',
+  'today_status': 'Today\'s Status',
+  'check_in': 'Check In',
+  'check_out': 'Check Out',
+  'checked_in': 'Checked In',
+  'checked_out': 'Checked Out',
+  'not_checked_in': 'Not Checked In',
+  'working_hours': 'Working Hours',
+  'this_month': 'This Month',
+  'present': 'Present',
+  'absent': 'Absent',
+  'late': 'Late',
+  'half_day': 'Half Day',
+  'on_leave': 'On Leave',
+  'recent_activity': 'Recent Activity',
+  'view_all': 'View All',
+
+  // Attendance
+  'attendance_history': 'Attendance History',
+  'date': 'Date',
+  'status': 'Status',
+  'check_in_time': 'Check In Time',
+  'check_out_time': 'Check Out Time',
+  'duration': 'Duration',
+  'verification_method': 'Verification',
+  'no_attendance_records': 'No attendance records found',
+
+  // Leaves
+  'leave_requests': 'Leave Requests',
+  'apply_leave': 'Apply Leave',
+  'leave_type': 'Leave Type',
+  'start_date': 'Start Date',
+  'end_date': 'End Date',
+  'reason': 'Reason',
+  'pending': 'Pending',
+  'approved': 'Approved',
+  'rejected': 'Rejected',
+  'leave_balance': 'Leave Balance',
+  'days_remaining': 'days remaining',
+  'no_leave_requests': 'No leave requests',
+  'leave_applied': 'Leave request submitted successfully',
+  'select_leave_type': 'Select leave type',
+  'reason_required': 'Reason is required',
+
+  // Profile
+  'my_profile': 'My Profile',
+  'employee_id': 'Employee ID',
+  'department': 'Department',
+  'designation': 'Designation',
+  'phone': 'Phone',
+  'shift': 'Shift',
+  'joining_date': 'Joining Date',
+  'language': 'Language',
+  'change_language': 'Change Language',
+  'english': 'English',
+  'tamil': 'Tamil',
+  'hindi': 'Hindi',
+  'about_app': 'About App',
+  'version': 'Version',
+
+  // Geofence
+  'access_denied': 'Access Denied',
+  'outside_geofence': 'Outside Office Area',
+  'outside_geofence_message':
+      'You are currently outside the designated office area. Please move within the office premises to access the application.',
+  'location_permission_required': 'Location Permission Required',
+  'location_permission_message':
+      'This app requires location access to verify your office presence. Please enable location services.',
+  'enable_location': 'Enable Location',
+  'checking_location': 'Verifying your location...',
+
+  // Splash
+  'initializing_app': 'Initializing...',
+};

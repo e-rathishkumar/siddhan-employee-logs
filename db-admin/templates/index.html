@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Tables - DB Admin{% endblock %}
+{% block content %}
+<h2 style="margin-bottom: 1.5rem;">Database Tables</h2>
+<div class="grid">
+  {% for table in tables %}
+  <div class="table-card">
+    <a href="/table/{{ table }}">{{ table }}</a>
+    <span class="badge">table</span>
+  </div>
+  {% endfor %}
+</div>
+{% if not tables %}
+<p style="color: #94a3b8;">No tables found. The database may not be initialized yet.</p>
+{% endif %}
+{% endblock %}
