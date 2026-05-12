@@ -39,8 +39,8 @@ class ApiConstants {
   static const String geofences = '/geofences';
   static const String geofenceCheck = '/geofences/check';
 
-  // Timeouts
-  static const Duration connectTimeout = Duration(seconds: 30);
-  static const Duration receiveTimeout = Duration(seconds: 30);
-  static const Duration sendTimeout = Duration(seconds: 30);
+  // Timeouts (generous for Render free tier cold start ~30s + face recognition processing)
+  static const Duration connectTimeout = Duration(seconds: 60);
+  static const Duration receiveTimeout = Duration(seconds: 120);
+  static const Duration sendTimeout = Duration(seconds: 60);
 }

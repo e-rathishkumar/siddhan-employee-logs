@@ -137,8 +137,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
       return Right(employee);
     } on DioException catch (e) {
-      return Left(
-          e.response?.data?['detail']?.toString() ?? 'Failed to load profile');
+      final data = e.response?.data;
+      return Left(data is Map ? data['detail']?.toString() ?? 'Failed to load profile' : 'Failed to load profile');
     } catch (e) {
       return Left('Failed to load profile');
     }
@@ -172,8 +172,8 @@ class AuthRepositoryImpl implements AuthRepository {
 
       return Right(response);
     } on DioException catch (e) {
-      return Left(
-          e.response?.data?['detail']?.toString() ?? 'Failed to update password');
+      final data = e.response?.data;
+      return Left(data is Map ? data['detail']?.toString() ?? 'Failed to update password' : 'Failed to update password');
     } catch (e) {
       return Left('Failed to update password: ${e.toString()}');
     }
@@ -185,8 +185,8 @@ class AuthRepositoryImpl implements AuthRepository {
       final response = await _apiClient.validateFace(imageBytes, 'face_capture.jpg');
       return Right(response);
     } on DioException catch (e) {
-      return Left(
-          e.response?.data?['detail']?.toString() ?? 'Face validation failed');
+      final data = e.response?.data;
+      return Left(data is Map ? data['detail']?.toString() ?? 'Face validation failed' : 'Face validation failed');
     } catch (e) {
       return Left('Face validation failed: ${e.toString()}');
     }
@@ -198,8 +198,8 @@ class AuthRepositoryImpl implements AuthRepository {
       final response = await _apiClient.registerSelfFace(imageBytes, 'face_photo.jpg');
       return Right(response);
     } on DioException catch (e) {
-      return Left(
-          e.response?.data?['detail']?.toString() ?? 'Face registration failed');
+      final data = e.response?.data;
+      return Left(data is Map ? data['detail']?.toString() ?? 'Face registration failed' : 'Face registration failed');
     } catch (e) {
       return Left('Face registration failed: ${e.toString()}');
     }
@@ -213,8 +213,9 @@ class AuthRepositoryImpl implements AuthRepository {
       final response = await _apiClient.register360Face(captures);
       return Right(response);
     } on DioException catch (e) {
-      return Left(
-          e.response?.data?['detail']?.toString() ?? '360° face registration failed');
+      final data = e.response?.data;
+      final detail = data is Map ? data['detail']?.toString() : null;
+      return Left(detail ?? '360° face registration failed (${e.response?.statusCode ?? 'no response'})');
     } catch (e) {
       return Left('360° face registration failed: ${e.toString()}');
     }

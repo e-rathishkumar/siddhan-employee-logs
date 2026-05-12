@@ -103,6 +103,10 @@ class ApiClient {
     final response = await _dio.post(
       ApiConstants.faceRegister360,
       data: formData,
+      options: Options(
+        sendTimeout: const Duration(seconds: 120),
+        receiveTimeout: const Duration(seconds: 120),
+      ),
     );
     return response.data as Map<String, dynamic>;
   }
