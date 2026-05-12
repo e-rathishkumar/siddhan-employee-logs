@@ -954,9 +954,10 @@ class _KioskScreenState extends State<KioskScreen> with WidgetsBindingObserver {
   }
 
   Widget _buildGenderAvatar(List<Color> colors, Color glowColor, double s) {
-    final genderIcon = _getGenderIcon();
     final genderColors = _getGenderColors();
-    final initial = _currentUserName.isNotEmpty ? _currentUserName[0].toUpperCase() : '';
+    // Use DiceBear "notionists" style for adult-looking avatar illustrations
+    final seed = Uri.encodeComponent(_currentUserName.isNotEmpty ? _currentUserName : 'employee');
+    final avatarImageUrl = 'https://api.dicebear.com/9.x/notionists/png?seed=$seed&size=512&backgroundColor=transparent';
 
     return Container(
       width: s, height: s,
@@ -965,15 +966,30 @@ class _KioskScreenState extends State<KioskScreen> with WidgetsBindingObserver {
         gradient: LinearGradient(colors: genderColors),
         boxShadow: [BoxShadow(color: glowColor.withValues(alpha: 0.4), blurRadius: 30, spreadRadius: 5)],
       ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(genderIcon, size: s * 0.35, color: Colors.white),
-          if (initial.isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Text(initial, style: GoogleFonts.poppins(fontSize: (s * 0.15).sp, fontWeight: FontWeight.w700, color: Colors.white.withValues(alpha: 0.8))),
-          ],
-        ],
+      child: ClipOval(
+        child: Image.network(
+          avatarImageUrl,
+          width: s, height: s,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => _buildInitialAvatar(genderColors, glowColor, s),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInitialAvatar(List<Color> colors, Color glowColor, double s) {
+    final initial = _currentUserName.isNotEmpty ? _currentUserName[0].toUpperCase() : '';
+    return Container(
+      width: s, height: s,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: LinearGradient(colors: colors),
+      ),
+      child: Center(
+        child: Text(
+          initial,
+          style: GoogleFonts.poppins(fontSize: (s * 0.4).sp, fontWeight: FontWeight.w700, color: Colors.white),
+        ),
       ),
     );
   }

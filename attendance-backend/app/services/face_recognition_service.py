@@ -44,16 +44,21 @@ ROLLING_WINDOW_DAYS = 5
 MIN_CONFIDENCE = 0.55
 
 
-def _preprocess_image(image_bytes: bytes) -> np.ndarray:
-    """Preprocess image for face recognition with enhanced quality."""
+def _preprocess_image(image_bytes: bytes, max_dimension: int = 800) -> np.ndarray:
+    """Preprocess image for face recognition with enhanced quality.
+    
+    Args:
+        max_dimension: Cap the largest dimension to this value.
+                       Use 640 for fast kiosk detection, 800 for registration.
+    """
     img_pil = Image.open(io.BytesIO(image_bytes))
     img_pil = ImageOps.exif_transpose(img_pil)
     img_pil = img_pil.convert("RGB")
 
-    # Downscale large images for faster face_encodings() — 800px is plenty for dlib
+    # Downscale large images for faster face_encodings()
     max_dim = max(img_pil.width, img_pil.height)
-    if max_dim > 800:
-        scale = 800 / max_dim
+    if max_dim > max_dimension:
+        scale = max_dimension / max_dim
         img_pil = img_pil.resize(
             (int(img_pil.width * scale), int(img_pil.height * scale)),
             Image.LANCZOS,
@@ -485,8 +490,8 @@ def detect_and_match(db: Session, image_bytes: bytes) -> list[dict]:
     if not _encoding_cache:
         return []
 
-    image_array = _preprocess_image(image_bytes)
-    face_locations = face_rec.face_locations(image_array, model="hog", number_of_times_to_upsample=2)
+    image_array = _preprocess_image(image_bytes, max_dimension=640)
+    face_locations = face_rec.face_locations(image_array, model="hog", number_of_times_to_upsample=1)
     if not face_locations:
         return []
 
@@ -514,12 +519,12 @@ def detect_and_match_all(db: Session, image_bytes: bytes) -> tuple[list[dict], l
     face_rec = _get_face_recognition()
     _load_encodings(db)
 
-    image_array = _preprocess_image(image_bytes)
+    # Use smaller image (640px) for fast kiosk detection
+    image_array = _preprocess_image(image_bytes, max_dimension=640)
     img_height, img_width = image_array.shape[:2]
 
+    # Single pass with upsample=1 for speed — skip slow upsample=2 retry
     face_locations = face_rec.face_locations(image_array, model="hog", number_of_times_to_upsample=1)
-    if not face_locations:
-        face_locations = face_rec.face_locations(image_array, model="hog", number_of_times_to_upsample=2)
     if not face_locations:
         return [], []
 
