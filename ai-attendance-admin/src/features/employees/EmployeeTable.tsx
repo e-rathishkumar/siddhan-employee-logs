@@ -78,13 +78,15 @@ export function EmployeeTable({ employees, onEdit }: EmployeeTableProps) {
                         Deactivate
                       </Button>
                     ) : (
-                      <Button variant="success" size="sm" onClick={() => activateEmployee(emp.id)}>
-                        Activate
-                      </Button>
+                      <>
+                        <Button variant="success" size="sm" onClick={() => activateEmployee(emp.id)}>
+                          Activate
+                        </Button>
+                        <Button variant="danger" size="sm" onClick={() => setDeleteTarget(emp)}>
+                          Delete
+                        </Button>
+                      </>
                     )}
-                    <Button variant="danger" size="sm" onClick={() => setDeleteTarget(emp)}>
-                      Delete
-                    </Button>
                   </div>
                 </td>
               </tr>

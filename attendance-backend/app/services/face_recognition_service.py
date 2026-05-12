@@ -50,7 +50,16 @@ def _preprocess_image(image_bytes: bytes) -> np.ndarray:
     img_pil = ImageOps.exif_transpose(img_pil)
     img_pil = img_pil.convert("RGB")
 
-    # Enhance: ensure minimum resolution for better face detection
+    # Downscale large images for faster face_encodings() — 800px is plenty for dlib
+    max_dim = max(img_pil.width, img_pil.height)
+    if max_dim > 800:
+        scale = 800 / max_dim
+        img_pil = img_pil.resize(
+            (int(img_pil.width * scale), int(img_pil.height * scale)),
+            Image.LANCZOS,
+        )
+
+    # Ensure minimum resolution for better face detection
     min_dim = min(img_pil.width, img_pil.height)
     if min_dim < 480:
         scale = 480 / min_dim
@@ -198,6 +207,43 @@ def register_face_with_angle(
     return safe_filename
 
 
+def _save_face_photo(
+    db: Session, employee_id: uuid.UUID, image_array: np.ndarray,
+    encoding: np.ndarray, angle_label: str,
+) -> str:
+    """Save a face photo with a pre-computed encoding (no re-encoding needed)."""
+    safe_filename = f"{employee_id}_{angle_label}_{uuid.uuid4().hex[:8]}.jpg"
+    file_path = os.path.join(UPLOAD_DIR, safe_filename)
+    normalized_img = Image.fromarray(image_array)
+    normalized_img.save(file_path, "JPEG", quality=85)
+
+    today = date.today().isoformat()
+
+    photo = FacePhoto(
+        employee_id=employee_id,
+        file_path=safe_filename,
+        is_primary=(angle_label == "front"),
+        face_encoding=json.dumps(encoding.tolist()),
+        angle_label=angle_label,
+        capture_date=today,
+        day_slot=0,
+    )
+    db.add(photo)
+
+    # Update cache
+    emp = db.query(Employee).filter(Employee.id == employee_id).first()
+    if emp:
+        if employee_id in _encoding_cache:
+            existing_encodings, name, code = _encoding_cache[employee_id]
+            existing_encodings.append(encoding)
+            _encoding_cache[employee_id] = (existing_encodings, name, code)
+        else:
+            _encoding_cache[employee_id] = ([encoding], emp.name, emp.employee_id)
+
+    logger.info(f"Saved face for employee {employee_id} (angle: {angle_label})")
+    return safe_filename
+
+
 def register_face_360(
     db: Session, employee_id: uuid.UUID, images: List[Tuple[bytes, str, str]]
 ) -> List[str]:
@@ -205,6 +251,7 @@ def register_face_360(
     
     Validates that all angle photos belong to the same person by comparing
     their face encodings against the front-facing photo.
+    Caches encodings from validation pass to avoid recomputing during save.
     
     Args:
         images: List of (image_bytes, filename, angle_label) tuples
@@ -221,23 +268,28 @@ def register_face_360(
     if not front_images:
         raise ValueError("Front-facing photo is required for face registration")
     
-    # Get front face encoding as identity reference
+    # -- Single pass: preprocess + encode all images, validate identity --
+    # This avoids calling face_encodings() twice per image (was 10 calls, now 5)
+    processed: list[tuple[np.ndarray, np.ndarray | None, str]] = []  # (image_array, encoding_or_None, angle)
+    
+    # Front image first
     front_bytes, front_filename, front_angle = front_images[0]
     front_array = _preprocess_image(front_bytes)
     front_encodings = face_rec.face_encodings(front_array)
     if not front_encodings:
         raise ValueError("No face detected in the front-facing photo. Please try again with better lighting.")
     front_encoding = front_encodings[0]
+    processed.append((front_array, front_encoding, "front"))
     
-    # Validate all other images contain the same person
-    IDENTITY_TOLERANCE = 0.55  # Same as MIN_CONFIDENCE
+    # Validate and encode other images
+    IDENTITY_TOLERANCE = 0.55
     for img_bytes, filename, angle in other_images:
         try:
             img_array = _preprocess_image(img_bytes)
             encodings = face_rec.face_encodings(img_array)
             if not encodings:
-                # Side/up/down photos may not always detect a face — skip validation but keep the photo
-                logger.warning(f"No face detected for angle {angle}, skipping identity check")
+                logger.warning(f"No face detected for angle {angle}, saving without encoding")
+                processed.append((img_array, None, angle))
                 continue
             distance = face_rec.face_distance([front_encoding], encodings[0])[0]
             if distance > IDENTITY_TOLERANCE:
@@ -245,13 +297,17 @@ def register_face_360(
                     f"The {angle} photo appears to be a different person. "
                     f"Please ensure only your face is visible in all angles."
                 )
+            processed.append((img_array, encodings[0], angle))
         except ValueError:
             raise
         except Exception as e:
             logger.warning(f"Could not validate angle {angle}: {e}")
+            try:
+                processed.append((_preprocess_image(img_bytes), None, angle))
+            except Exception:
+                pass
     
-    # All validated — now remove old photos and save new ones
-    # First remove all existing permanent registration photos for this employee
+    # -- All validated: remove old photos and save new ones --
     old_photos = db.query(FacePhoto).filter(
         FacePhoto.employee_id == employee_id,
         FacePhoto.day_slot == 0,
@@ -266,19 +322,36 @@ def register_face_360(
     ).delete()
     db.commit()
 
-    # Invalidate cache for this employee
     invalidate_cache(employee_id)
 
-    # Save front first (must succeed), then other angles
+    # Save all photos using cached encodings (no re-encoding!)
     saved_paths = []
-    ordered_images = front_images + other_images
-    for image_bytes, filename, angle_label in ordered_images:
+    for image_array, encoding, angle_label in processed:
+        if encoding is None:
+            # No face detected for this angle — still save the image but skip encoding
+            safe_filename = f"{employee_id}_{angle_label}_{uuid.uuid4().hex[:8]}.jpg"
+            file_path = os.path.join(UPLOAD_DIR, safe_filename)
+            Image.fromarray(image_array).save(file_path, "JPEG", quality=85)
+            photo = FacePhoto(
+                employee_id=employee_id,
+                file_path=safe_filename,
+                is_primary=False,
+                face_encoding=None,
+                angle_label=angle_label,
+                capture_date=date.today().isoformat(),
+                day_slot=0,
+            )
+            db.add(photo)
+            saved_paths.append(safe_filename)
+            continue
         try:
-            path = register_face_with_angle(db, employee_id, image_bytes, filename, angle_label)
+            path = _save_face_photo(db, employee_id, image_array, encoding, angle_label)
             saved_paths.append(path)
-        except ValueError as e:
+        except Exception as e:
             logger.warning(f"Skipping angle {angle_label}: {e}")
             continue
+
+    db.commit()
 
     if not saved_paths:
         raise ValueError("No faces detected in any of the uploaded images")
