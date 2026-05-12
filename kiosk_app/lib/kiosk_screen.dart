@@ -82,10 +82,12 @@ class _KioskScreenState extends State<KioskScreen> with WidgetsBindingObserver {
   double _imgWidth = 1;
   double _imgHeight = 1;
 
+  bool _isTtsSpeaking = false;
+
   final Dio _dio = Dio(BaseOptions(
     baseUrl: kApiBaseUrl,
-    connectTimeout: const Duration(seconds: 5),
-    receiveTimeout: const Duration(seconds: 10),
+    connectTimeout: const Duration(seconds: 15),
+    receiveTimeout: const Duration(seconds: 30),
   ));
 
   @override
@@ -141,6 +143,19 @@ class _KioskScreenState extends State<KioskScreen> with WidgetsBindingObserver {
     }
     await Future.delayed(const Duration(milliseconds: 100));
     if (_isDisposed) return;
+    _isTtsSpeaking = true;
+    tts.setCompletionHandler(() {
+      _isTtsSpeaking = false;
+      // For welcome screen: auto-return to scanning after TTS finishes
+      if (mounted && !_isDisposed && _kioskState == KioskState.welcome) {
+        _returnToScanTimer?.cancel();
+        _returnToScanTimer = Timer(const Duration(seconds: 3), () {
+          if (mounted && !_isDisposed && _kioskState == KioskState.welcome) {
+            _returnToScanning();
+          }
+        });
+      }
+    });
     await tts.speak(message);
   }
 
@@ -250,8 +265,13 @@ class _KioskScreenState extends State<KioskScreen> with WidgetsBindingObserver {
   }
 
   void _startDetectionLoop() {
-    _detectionTimer = Timer.periodic(const Duration(milliseconds: 2500), (_) {
-      if (!_isDetecting && _kioskState == KioskState.scanning) {
+    _detectionTimer = Timer.periodic(const Duration(milliseconds: 4000), (_) {
+      if (!_isDetecting && _kioskState == KioskState.scanning && !_isDisposed && !_isTtsSpeaking) {
+        if (!_isOnline) {
+          // When offline, do a health check instead of sending frames
+          _checkServerHealth();
+          return;
+        }
         _captureAndDetect();
       }
     });
@@ -455,17 +475,45 @@ class _KioskScreenState extends State<KioskScreen> with WidgetsBindingObserver {
           }
         });
       }
-    } on DioException catch (_) {
+    } on DioException catch (e) {
       if (mounted && !_isDisposed) {
-        setState(() {
-          _isOnline = false;
-          _statusMessage = 'Server unreachable. Retrying...';
-        });
+        // Only mark offline for connection-level failures, not 4xx/5xx responses
+        final isConnectionError = e.type == DioExceptionType.connectionTimeout ||
+            e.type == DioExceptionType.receiveTimeout ||
+            e.type == DioExceptionType.sendTimeout ||
+            e.type == DioExceptionType.connectionError;
+        if (isConnectionError) {
+          setState(() {
+            _isOnline = false;
+            _statusMessage = 'Server unreachable. Retrying...';
+          });
+          // Try a lightweight health check to confirm server status
+          _checkServerHealth();
+        }
       }
     } catch (_) {
       // Ignore
     } finally {
       _isDetecting = false;
+    }
+  }
+
+  Future<void> _checkServerHealth() async {
+    // Background health probe — if server recovers, mark online again
+    try {
+      final response = await Dio(BaseOptions(
+        baseUrl: kApiBaseUrl,
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+      )).get('/health');
+      if (response.statusCode == 200 && mounted && !_isDisposed) {
+        setState(() {
+          _isOnline = true;
+          _statusMessage = 'Step in front of the camera to check in';
+        });
+      }
+    } catch (_) {
+      // Still offline — the next detection loop iteration will retry
     }
   }
 
@@ -511,7 +559,13 @@ class _KioskScreenState extends State<KioskScreen> with WidgetsBindingObserver {
 
   void _scheduleReturnToScan() {
     _returnToScanTimer?.cancel();
-    _returnToScanTimer = Timer(const Duration(seconds: 8), () {
+    // For alreadyIn and alreadyOut: do NOT auto-close — user must choose an action.
+    // For welcome: auto-return is handled by TTS completion handler.
+    if (_kioskState == KioskState.alreadyIn || _kioskState == KioskState.alreadyOut) {
+      return;
+    }
+    // Welcome screen: set a generous fallback timer in case TTS fails/never completes
+    _returnToScanTimer = Timer(const Duration(seconds: 30), () {
       if (mounted && !_isDisposed) {
         _returnToScanning();
       }
@@ -521,6 +575,7 @@ class _KioskScreenState extends State<KioskScreen> with WidgetsBindingObserver {
   void _returnToScanning() {
     _returnToScanTimer?.cancel();
     _tts?.stop();
+    _isTtsSpeaking = false;
     setState(() {
       _kioskState = KioskState.scanning;
       _currentUserName = '';
@@ -580,6 +635,7 @@ class _KioskScreenState extends State<KioskScreen> with WidgetsBindingObserver {
 
   Future<void> _handleContinue() async {
     _tts?.stop();
+    _isTtsSpeaking = false;
     try {
       await _dio.post('/api/v1/face/kiosk-continue/$_currentEmployeeId');
     } catch (_) {}
@@ -588,6 +644,7 @@ class _KioskScreenState extends State<KioskScreen> with WidgetsBindingObserver {
 
   Future<void> _handleCheckout() async {
     _tts?.stop();
+    _isTtsSpeaking = false;
     try {
       await _dio.post('/api/v1/face/kiosk-checkout/$_currentEmployeeId');
     } catch (_) {}
@@ -611,6 +668,7 @@ class _KioskScreenState extends State<KioskScreen> with WidgetsBindingObserver {
 
   Future<void> _handleReCheckin() async {
     _tts?.stop();
+    _isTtsSpeaking = false;
     try {
       await _dio.post('/api/v1/face/kiosk-recheckin/$_currentEmployeeId');
     } catch (_) {}
