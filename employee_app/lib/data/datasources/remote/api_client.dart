@@ -104,8 +104,8 @@ class ApiClient {
       ApiConstants.faceRegister360,
       data: formData,
       options: Options(
-        sendTimeout: const Duration(seconds: 120),
-        receiveTimeout: const Duration(seconds: 120),
+        sendTimeout: const Duration(seconds: 60),
+        receiveTimeout: const Duration(seconds: 60),
       ),
     );
     return response.data as Map<String, dynamic>;
